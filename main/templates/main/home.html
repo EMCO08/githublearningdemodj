@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Defteri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .note-form {
+            margin-bottom: 2rem;
+        }
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .notes-list {
+            margin-top: 2rem;
+        }
+        .note-item {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid #1a73e8;
+        }
+        .note-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .modal-buttons {
+            margin-top: 1rem;
+        }
+        .modal-buttons button {
+            margin: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Not Defteri</h1>
+        
+        <div class="note-form">
+            <form id="noteForm">
+                {% csrf_token %}
+                <textarea name="content" placeholder="Notunuzu buraya yazın..." required></textarea>
+                <button type="submit">Not Ekle</button>
+            </form>
+        </div>
+
+        <div class="notes-list">
+            {% for note in notes %}
+            <div class="note-item">
+                <p>{{ note.content }}</p>
+                <div class="note-date">{{ note.created_at|date:"d.m.Y H:i" }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h2>Notu Kaydetmek İstiyor musunuz?</h2>
+            <div class="modal-buttons">
+                <button onclick="confirmNote()">Evet</button>
+                <button onclick="cancelNote()" style="background-color: #dc3545;">Hayır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('noteForm');
+        const modal = document.getElementById('confirmModal');
+        let formData = null;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            formData = new FormData(form);
+            modal.style.display = 'block';
+        });
+
+        function confirmNote() {
+            fetch('', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            });
+            modal.style.display = 'none';
+        }
+
+        function cancelNote() {
+            modal.style.display = 'none';
+            form.reset();
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 
