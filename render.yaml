@@ -3,7 +3,8 @@ services:
     name: django-app
     env: python
     region: frankfurt
-    buildCommand: "./build.sh"
+    runtime: python
+    buildCommand: "bash build.sh"
     startCommand: "gunicorn mysite.wsgi:application"
     envVars:
       - key: DATABASE_URL
@@ -18,8 +19,11 @@ services:
         value: false
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
+      - key: PYTHON_VERSION
+        value: 3.11.0
 
 databases:
   - name: django-postgres
     region: frankfurt
-    plan: free 
+    plan: free
+    ipAllowList: [] 

@@ -3,11 +3,19 @@
 
 set -o errexit  # Hata durumunda script'i durdur
 
-# Python paketlerini yükle
+echo "Python sürümünü kontrol ediyorum..."
+python --version
+
+echo "Gerekli paketleri yüklüyorum..."
 pip install -r requirements.txt
 
-# Statik dosyaları topla
+echo "Python uygulamasını kontrol ediyorum..."
+python manage.py check
+
+echo "Statik dosyaları topluyorum..."
 python manage.py collectstatic --no-input
 
-# Veritabanı migrasyonlarını uygula
-python manage.py migrate 
+echo "Veritabanı migrasyonlarını uyguluyorum..."
+python manage.py migrate
+
+echo "Build işlemi tamamlandı!" 
